@@ -116,7 +116,7 @@ async function main() {
           },
           {
             name: "Current `netout`",
-            value: sendingData.currentNetIn,
+            value: sendingData.currentNetOut,
             inline: true,
           },
           breakInline,

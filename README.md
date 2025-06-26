@@ -7,3 +7,10 @@ Copy `.env.example` to `.env`, fill it out and reference optional params in [src
 Discord webhook example
 
 ![Screenshot of Discord Embed showing network statistics for the hour](screenshots/image.png)
+
+## TODO
+
+[ ] Sending in thread support
+[ ] Support for more than just one VM
+[ ] Threshold alerts
+[ ] Config file for multiple VMs and reporting configurations
