@@ -95,9 +95,10 @@ async function main() {
     url: webhookData.groups["url"]
   });
 
+  console.log(netinOnly,netoutOnly);
   const sendingData = {
-    currentNetIn: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netin)].netin),
-    currentNetOut: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netout)].netout),
+    lastNetIn: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netin)].netin),
+    lastNetOut: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netout)].netout),
     highestNetInPeriod: prettyBytes(getLargestInArray(netinOnly)),
     highestNetOutPeriod: prettyBytes(getLargestInArray(netoutOnly))
   }
@@ -110,13 +111,13 @@ async function main() {
         .setDescription(`Current network statistics for this period`)
         .setFields([
           {
-            name: "Current `netin`",
-            value: sendingData.currentNetIn,
+            name: "Last `netin`",
+            value: sendingData.lastNetIn,
             inline: true,
           },
           {
-            name: "Current `netout`",
-            value: sendingData.currentNetOut,
+            name: "Last `netout`",
+            value: sendingData.lastNetOut,
             inline: true,
           },
           breakInline,

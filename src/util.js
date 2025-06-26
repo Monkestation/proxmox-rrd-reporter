@@ -7,7 +7,7 @@ export const RegExps = {
 export const breakInline = { name: "\u200B", value: "\u200B", inline: true };
 
 export function getLargestInArray(array) {
-  let largest = array[0];
+  let largest = array[0] || 0;
 
   for (var i = 0; i < array.length; i++) {
     if (array[i] > largest ) {
