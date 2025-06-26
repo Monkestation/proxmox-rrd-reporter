@@ -21,9 +21,19 @@ const config = {
   saveRRDData: Boolean(process.env.SAVE_RRDDATA)
 }
 
+const periodColorMap = {
+  hour: 0x3B88C3,
+  day: 0x48F08B,
+  month: 0xFBC02D,
+  year: 0xE53935
+}
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 async function preFlight() {
+  if (!process.env.PERIOD) {
+    console.log("No period specified, defaulting to hour")
+  }
   const optional = ["discordWebhook", "proxmoxPort"];
   for (const [key, value] of Object.entries(config)) {
     if (value == undefined && !optional.includes(key)) {
@@ -95,14 +105,13 @@ async function main() {
     url: webhookData.groups["url"]
   });
 
-  console.log(netinOnly,netoutOnly);
   const sendingData = {
     lastNetIn: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netin)].netin),
     lastNetOut: prettyBytes(rrdData[rrdData.findLastIndex(e => e.netout)].netout),
     highestNetInPeriod: prettyBytes(getLargestInArray(netinOnly)),
     highestNetOutPeriod: prettyBytes(getLargestInArray(netoutOnly))
   }
-  console.log(sendingData);
+  console.log(`Data this period ${config.period}:\n`,sendingData);
 
   await webhook.send({
     embeds: [
@@ -133,7 +142,7 @@ async function main() {
           },
         ])
         .setImage(`attachment://${path.basename(rrdGraph.filename)}`)
-        .setColor("#3B88C3")
+        .setColor(periodColorMap[config.period])
         .setTimestamp(new Date())
         .setAuthor({
           name: "proxmox-rrd-reporter",
