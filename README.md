@@ -1,4 +1,4 @@
-# Network monitor pusher thingy
+# proxmox-rrd-reporter
 
 This wont be a very good readme. This fetches RRD data from a proxmox instance for a specifc VM id on a specific node, and saves it to disk and optionally sends to Discord. I may work on this more in the future to log and send more data like CPU or disk, but for now it's just for network monitoring.
 
