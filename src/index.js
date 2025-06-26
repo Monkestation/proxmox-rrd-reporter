@@ -106,7 +106,7 @@ async function main() {
   await webhook.send({
     embeds: [
       new EmbedBuilder()
-        .setTitle(`:information: Network Monitor Statistics - vmid: ${config.proxmoxVmid}`)
+        .setTitle(`:information: (${config.period}) Network Monitor Statistics - ${config.proxmoxVmid} `)
         .setDescription(`Current network statistics for this period`)
         .setFields([
           {
@@ -132,10 +132,11 @@ async function main() {
           },
         ])
         .setImage(`attachment://${path.basename(rrdGraph.filename)}`)
-        .setColor("#39C9FF")
+        .setColor("#3B88C3")
         .setTimestamp(new Date())
-        .setFooter({
-          text: `RRDtool (Period: \`${config.period}\`)`
+        .setAuthor({
+          name: "proxmox-rrd-reporter",
+          url: "https://github.com/monkestation/proxmox-rrd-reporter"
         })
     ],
     files: [
