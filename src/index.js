@@ -95,7 +95,7 @@ async function main() {
 
   if (!config.discordWebhook) return;
   const netinOnly = rrdData.map(e => e.netin);
-  const netoutOnly = rrdData.map(e => e.netin);
+  const netoutOnly = rrdData.map(e => e.netout);
   const webhookData = RegExps.DiscordWebhook.exec(config.discordWebhook);
 
 
