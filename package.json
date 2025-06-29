@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "lint": "prettier src/* --write"
   },
   "keywords": [
     "proxmox",
@@ -25,5 +26,8 @@
     "dotenv": "^16.5.0",
     "pretty-bytes": "^7.0.0",
     "proxmox-api": "^1.1.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
   }
 }
