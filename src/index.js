@@ -1,12 +1,14 @@
 import proxmoxApi from "proxmox-api";
 import fs from "node:fs/promises";
 import path from "node:path";
-import prettyBytes from "pretty-bytes";
 import dotenv from "dotenv";
 import { WebhookClient, EmbedBuilder, AttachmentBuilder } from "discord.js";
-import { breakInline, createDir, getLargestInArray, RegExps } from "./util.js";
+import { breakInline, createDir, getLargestInArray, prettyBytesWrapper as prettyBytes, RegExps } from "./util.js";
 
 dotenv.config();
+
+// 5 minutes
+const scriptTimeout = 5 * 60 * 1000;
 
 const config = {
   proxmoxVmid: process.env.PROXMOX_VMID || "100",
@@ -60,6 +62,12 @@ async function preFlight() {
 }
 
 async function main() {
+  setTimeout(() => {
+    console.error(
+      `Script ran for longer than set timeout (${scriptTimeout}), killing...`
+    );
+    process.exit(1);
+  }, scriptTimeout);
   const proxmox = proxmoxApi({
     host: config.proxmoxHost,
     port: config.proxmoxPort,
@@ -115,9 +123,18 @@ async function main() {
     }
   }
 
-  if (!config.discordWebhook) return;
   const netinOnly = rrdData.map((e) => e.netin);
   const netoutOnly = rrdData.map((e) => e.netout);
+  const sendingData = {
+    lastNetIn: prettyBytes(rrdData[rrdData.findLastIndex((e) => e.netin)].netin),
+    lastNetOut: prettyBytes(rrdData[rrdData.findLastIndex((e) => e.netout)].netout), 
+    highestNetInPeriod: prettyBytes(getLargestInArray(netinOnly)),
+    highestNetOutPeriod: prettyBytes(getLargestInArray(netoutOnly)),
+  };
+
+  console.log(`Data this period ${config.period}:\n`, sendingData);
+
+  if (!config.discordWebhook) return;
   const webhookData = RegExps.DiscordWebhook.exec(config.discordWebhook);
 
   const webhook = new WebhookClient({
@@ -126,17 +143,7 @@ async function main() {
     url: webhookData.groups["url"],
   });
 
-  const sendingData = {
-    lastNetIn: prettyBytes(
-      rrdData[rrdData.findLastIndex((e) => e.netin)].netin
-    ),
-    lastNetOut: prettyBytes(
-      rrdData[rrdData.findLastIndex((e) => e.netout)].netout
-    ),
-    highestNetInPeriod: prettyBytes(getLargestInArray(netinOnly)),
-    highestNetOutPeriod: prettyBytes(getLargestInArray(netoutOnly)),
-  };
-  console.log(`Data this period ${config.period}:\n`, sendingData);
+  
 
   await webhook.send({
     embeds: [
@@ -185,4 +192,4 @@ async function main() {
   });
 }
 
-preFlight().then(main).catch(console.error);
+preFlight().then(main).then(process.exit).catch(console.error);

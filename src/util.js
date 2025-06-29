@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import prettyBytes from "pretty-bytes";
 
 export const RegExps = {
   DiscordWebhook:
@@ -28,4 +29,19 @@ export async function createDir(dir) {
       throw error;
     }
   }
+}
+
+/**
+ * Convert bytes to a human readable string: `1337` → `1.34 kB`.
+ * @param {number | bigint} input The number to format.
+ * @param {import("pretty-bytes").Options} options
+ */
+export function prettyBytesWrapper(input, options) {
+  const pbsSplit = prettyBytes(input, {
+    space: true,
+  }).split(" ");
+
+  pbsSplit[1] = pbsSplit[1].charAt(0).toUpperCase() + pbsSplit[1].toLowerCase().slice(1) + "ps"  
+
+  return pbsSplit.join(" ")
 }
