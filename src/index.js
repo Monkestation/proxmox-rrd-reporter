@@ -61,6 +61,8 @@ async function main() {
     password: config.proxmoxPassword,
     username: config.proxmoxUsername,
     strictSSL: false,
+    authTimeout: 300000,
+    queryTimeout: 300000,
   });
 
   const rrdGraph = await proxmox.nodes.$(config.proxmoxNode).qemu.$(config.proxmoxVmid).rrd.$get({
@@ -102,7 +104,7 @@ async function main() {
   const webhook = new WebhookClient({
     id: webhookData.groups["id"],
     token: webhookData.groups["token"],
-    url: webhookData.groups["url"]
+    url: webhookData.groups["url"],
   });
 
   const sendingData = {
