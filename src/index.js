@@ -48,6 +48,9 @@ async function preFlight() {
     if (value == undefined && !optional.includes(key)) {
       throw new Error(`Missing config value for ${key}`);
     }
+
+    if (value === "")
+      config[key] = undefined
   }
 
   if (
