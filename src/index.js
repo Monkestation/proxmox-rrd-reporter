@@ -33,6 +33,7 @@ const config = {
 const periodColorMap = {
   hour: 0x3b88c3,
   day: 0x48f08b,
+  week: 0x7cd228,
   month: 0xfbc02d,
   year: 0xe53935,
 };
@@ -49,8 +50,7 @@ async function preFlight() {
       throw new Error(`Missing config value for ${key}`);
     }
 
-    if (value === "")
-      config[key] = undefined
+    if (value === "") config[key] = undefined;
   }
 
   if (
@@ -189,7 +189,7 @@ async function main() {
           },
         ])
         .setImage(`attachment://${path.basename(rrdGraph.filename)}`)
-        .setColor(periodColorMap[config.period])
+        .setColor(periodColorMap[config.period] || 0x000000)
         .setTimestamp(new Date())
         .setAuthor({
           name: "proxmox-rrd-reporter",
