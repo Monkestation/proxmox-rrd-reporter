@@ -3,7 +3,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
 import { WebhookClient, EmbedBuilder, AttachmentBuilder } from "discord.js";
-import { breakInline, createDir, getLargestInArray, prettyBytesWrapper as prettyBytes, RegExps } from "./util.js";
+import {
+  breakInline,
+  createDir,
+  getLargestInArray,
+  prettyBytesWrapper as prettyBytes,
+  RegExps,
+} from "./util.js";
 
 dotenv.config();
 
@@ -19,6 +25,7 @@ const config = {
   proxmoxUsername: process.env.PROXMOX_USERNAME,
   proxmoxPassword: process.env.PROXMOX_PASSWORD,
   discordWebhook: process.env.DISCORD_WEBHOOK,
+  discordWebhookThreadID: process.env.DISCORD_WEBHOOK_THREADID,
   period: process.env.PERIOD,
   saveRRDData: Boolean(process.env.SAVE_RRDDATA),
 };
@@ -36,7 +43,7 @@ async function preFlight() {
   if (!process.env.PERIOD) {
     console.log("No period specified, defaulting to hour");
   }
-  const optional = ["discordWebhook", "proxmoxPort"];
+  const optional = ["discordWebhook", "discordWebhookThreadID", "proxmoxPort"];
   for (const [key, value] of Object.entries(config)) {
     if (value == undefined && !optional.includes(key)) {
       throw new Error(`Missing config value for ${key}`);
@@ -126,8 +133,12 @@ async function main() {
   const netinOnly = rrdData.map((e) => e.netin);
   const netoutOnly = rrdData.map((e) => e.netout);
   const sendingData = {
-    lastNetIn: prettyBytes(rrdData[rrdData.findLastIndex((e) => e.netin)].netin),
-    lastNetOut: prettyBytes(rrdData[rrdData.findLastIndex((e) => e.netout)].netout), 
+    lastNetIn: prettyBytes(
+      rrdData[rrdData.findLastIndex((e) => e.netin)].netin
+    ),
+    lastNetOut: prettyBytes(
+      rrdData[rrdData.findLastIndex((e) => e.netout)].netout
+    ),
     highestNetInPeriod: prettyBytes(getLargestInArray(netinOnly)),
     highestNetOutPeriod: prettyBytes(getLargestInArray(netoutOnly)),
   };
@@ -143,9 +154,8 @@ async function main() {
     url: webhookData.groups["url"],
   });
 
-  
-
   await webhook.send({
+    threadId: config.discordWebhookThreadID,
     embeds: [
       new EmbedBuilder()
         .setTitle(
@@ -192,4 +202,10 @@ async function main() {
   });
 }
 
-preFlight().then(main).then(process.exit).catch(console.error);
+preFlight()
+  .then(main)
+  .then(process.exit)
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

@@ -41,7 +41,10 @@ export function prettyBytesWrapper(input, options) {
     space: true,
   }).split(" ");
 
-  pbsSplit[1] = pbsSplit[1].charAt(0).toUpperCase() + pbsSplit[1].toLowerCase().slice(1) + "ps"  
+  pbsSplit[1] =
+    pbsSplit[1].charAt(0).toUpperCase() +
+    pbsSplit[1].toLowerCase().slice(1) +
+    "ps";
 
-  return pbsSplit.join(" ")
+  return pbsSplit.join(" ");
 }

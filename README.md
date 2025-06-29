@@ -10,7 +10,7 @@ Discord webhook example
 
 ## TODO
 
-- [ ] Sending in thread support
+- [x] Sending in thread support
 - [ ] Support for more than just one VM
 - [ ] Threshold alerts
 - [ ] Config file for multiple VMs and reporting configurations
