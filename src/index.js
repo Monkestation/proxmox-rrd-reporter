@@ -97,19 +97,19 @@ async function main() {
       ds: "netout,netin",
     });
 
-  const rrdData = (await proxmox.nodes
-    .$(config.proxmoxNode)
-    .qemu.$(config.proxmoxVmid)
-    .rrddata.$get({
-      timeframe: config.period,
-      cf: "MAX",
-    })).map(e=> {
-      e.netin = e.netin == undefined ? 0 : e.netin;
-      e.netout = e.netout == undefined ? 0 : e.netout;
-      return e;
-    });
-
-  
+  const rrdData = (
+    await proxmox.nodes
+      .$(config.proxmoxNode)
+      .qemu.$(config.proxmoxVmid)
+      .rrddata.$get({
+        timeframe: config.period,
+        cf: "MAX",
+      })
+  ).map((e) => {
+    e.netin = e.netin == undefined ? 0 : e.netin;
+    e.netout = e.netout == undefined ? 0 : e.netout;
+    return e;
+  });
 
   if (config.saveRRDData) {
     try {
